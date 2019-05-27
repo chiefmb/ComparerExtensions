@@ -30,10 +30,7 @@ namespace ComparerExtensions
         /// </returns>
         public abstract int Compare(T x, T y);
 
-        int IComparer.Compare(object x, object y)
-        {
-            return Compare((T)x, (T)y);
-        }
+        int IComparer.Compare(object x, object y) => Compare((T)x, (T)y);
 
         /// <summary>
         /// Creates a new KeyComparer that sorts using the results of the key selector.
@@ -46,7 +43,7 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             return new TypedKeyComparer<T, TKey>(keySelector, Comparer<TKey>.Default);
         }
@@ -64,11 +61,11 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             return new TypedKeyComparer<T, TKey>(keySelector, keyComparer);
         }
@@ -86,13 +83,13 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (keyComparison == null)
             {
-                throw new ArgumentNullException("keyComparison");
+                throw new ArgumentNullException(nameof(keyComparison));
             }
-            IComparer<TKey> keyComparer = ComparisonWrapper<TKey>.GetComparer(keyComparison);
+            var keyComparer = ComparisonWrapper<TKey>.GetComparer(keyComparison);
             return new TypedKeyComparer<T, TKey>(keySelector, keyComparer);
         }
 
@@ -107,7 +104,7 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             return new TypedKeyComparer<T, TKey>(keySelector, Comparer<TKey>.Default) { Descending = true };
         }
@@ -125,11 +122,11 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (keyComparer == null)
             {
-                throw new ArgumentNullException("keyComparer");
+                throw new ArgumentNullException(nameof(keyComparer));
             }
             return new TypedKeyComparer<T, TKey>(keySelector, keyComparer) { Descending = true };
         }
@@ -147,46 +144,14 @@ namespace ComparerExtensions
         {
             if (keySelector == null)
             {
-                throw new ArgumentNullException("keySelector");
+                throw new ArgumentNullException(nameof(keySelector));
             }
             if (keyComparison == null)
             {
-                throw new ArgumentNullException("keyComparison");
+                throw new ArgumentNullException(nameof(keyComparison));
             }
-            IComparer<TKey> keyComparer = ComparisonWrapper<TKey>.GetComparer(keyComparison);
+            var keyComparer = ComparisonWrapper<TKey>.GetComparer(keyComparison);
             return new TypedKeyComparer<T, TKey>(keySelector, keyComparer) { Descending = true };
-        }
-    }
-
-    internal sealed class TypedKeyComparer<T, TKey> : KeyComparer<T>
-    {
-        private readonly Func<T, TKey> _keySelector;
-        private readonly IComparer<TKey> _keyComparer;
-
-        public TypedKeyComparer(Func<T, TKey> keySelector, IComparer<TKey> keyComparer)
-        {
-            _keySelector = keySelector;
-            _keyComparer = keyComparer;
-        }
-
-        public bool Descending
-        {
-            get;
-            set;
-        }
-
-        public override int Compare(T x, T y)
-        {
-            TKey key1 = _keySelector(x);
-            TKey key2 = _keySelector(y);
-            if (Descending)
-            {
-                return _keyComparer.Compare(key2, key1);
-            }
-            else
-            {
-                return _keyComparer.Compare(key1, key2);
-            }
         }
     }
 }
